@@ -51,21 +51,11 @@ target_include_directories(
   ${GTEST_ROOT}/include
 )
 
-find_library(
-  GTEST_LOCAL_LIB
-  NAMES gtest
-  PATHS ${PROJECT_NAME}/lib64/
-)
-find_library(
-  GTEST_LOCAL_LIB_MAIN
-  NAMES gtest_main
-  PATHS ${PROJECT_NAME}/lib64/
-)
 target_link_libraries(
   tests
   ${CMAKE_THREAD_LIBS_INIT}
-  ${GTEST_LOCAL_LIB}
-  ${GTEST_LOCAL_LIB_MAIN}
+  GTest::gtest
+  GTest::main
   ${PROJECT_NAME}
 )
 
