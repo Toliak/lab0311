@@ -1,0 +1,20 @@
+image: toliak/bootstrap-cpp
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+tests:
+  script:
+    - ./scripts/tests.sh
+
+coverage:
+  script:
+    - ./scripts/coverage.sh
+
+quality:
+  script:
+    - ./scripts/duplication.sh
+
+mem_leaks:
+  script:
+    - ./scripts/valgrind.sh
