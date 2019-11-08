@@ -25,7 +25,7 @@ jobs:
         - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/valgrind.sh $DOCKER_IMAGE
 #    - name: "compile"
 #      script:
-#        - docker run -t -v $(pwd):/opt/builder/ --entrypoint ./scripts/compile.sh toliak/bootstrap-cpp
+#        - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/compile.sh $DOCKER_IMAGE
 
 notifications:
   email: false
