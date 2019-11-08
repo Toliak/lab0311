@@ -21,6 +21,9 @@ jobs:
     - name: "memory leaks"
       script:
         - docker run -t -v $(pwd):/opt/builder/ --entrypoint ./scripts/valgrind.sh toliak/bootstrap-cpp
+#    - name: "compile"
+#      script:
+#        - docker run -t -v $(pwd):/opt/builder/ --entrypoint ./scripts/compile.sh toliak/bootstrap-cpp
 
 notifications:
   email: false
