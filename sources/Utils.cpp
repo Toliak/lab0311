@@ -38,6 +38,12 @@ int programArguments(int argc, char **argv)
         std::cout << visibleOptions << "\n";
         return 1;
     }
+    if (variablesMap.count("install")) {
+        Settings::isInstallEnabled = true;
+    }
+    if (variablesMap.count("pack")) {
+        Settings::isPackEnabled = true;
+    }
 
     return 0;
 }

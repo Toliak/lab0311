@@ -8,12 +8,11 @@ void Timer::create(std::unique_ptr<ThreadData> &data)
         return;
     }
 
-    std::this_thread::sleep_for(milliseconds{Settings::timeout});
+    while (Settings::timeout > 0 && (!data || !data->isTerminated)) {
+        static const int DATA_TIMEOUT = 50;
 
-    while (data->isTerminated) {
-        static const int DATA_NULL_TIMEOUT = 1000;
-
-        std::this_thread::sleep_for(milliseconds{DATA_NULL_TIMEOUT});
+        std::this_thread::sleep_for(milliseconds{DATA_TIMEOUT});
+        Settings::timeout -= DATA_TIMEOUT;
     }
 
     data->isTerminated = true;
@@ -23,4 +22,6 @@ void Timer::create(std::unique_ptr<ThreadData> &data)
     } catch (std::exception &exception) {
         BOOST_LOG_TRIVIAL(error) << exception.what();
     }
+
+    BOOST_LOG_TRIVIAL(info) << "Timeout";
 }

@@ -15,17 +15,17 @@ Command::ArgList Command::getConfig()
 
 Command::ArgList Command::getBuild()
 {
-    return {"--build " + DIRECTORY_BUILD};
+    return {"--build", DIRECTORY_BUILD};
 }
 
 Command::ArgList Command::getInstall()
 {
-    return {"--build " + DIRECTORY_BUILD,
-            "--target install"};
+    return {"--build", DIRECTORY_BUILD,
+            "--target", "install"};
 }
 
 Command::ArgList Command::getPack()
 {
-    return {"--build " + DIRECTORY_BUILD,
-            "--target package"};
+    return {"--build", DIRECTORY_BUILD,
+            "--target", "package"};
 }

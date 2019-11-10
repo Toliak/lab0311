@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.4)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(BUILD_COVERAGE "Build coverage" OFF)
-
 set(
   HUNTER_CACHE_SERVERS
   "https://github.com/bmstu-iu8-cpp-sem-3/hunter-cache"
@@ -18,56 +16,55 @@ HunterGate(
   SHA1 "e14bc153a7f16d6a5eeec845fb0283c8fad8c358"
 )
 
-project(PROJECTNAME)    # TODO
+project(AutoPacker)
 string(APPEND CMAKE_CXX_FLAGS " -pedantic -Werror -Wall -Wextra")
 string(APPEND CMAKE_CXX_FLAGS " -Wno-unused-command-line-argument")
-string(APPEND CMAKE_CXX_FLAGS " -Wshadow -Wnon-virtual-dtor")
+string(APPEND CMAKE_CXX_FLAGS " -Wnon-virtual-dtor")
 
-hunter_add_package(GTest)
-find_package(GTest CONFIG REQUIRED)
+hunter_add_package(
+  Boost
+  COMPONENTS
+  program_options
+  thread
+  log
+  filesystem
+)
+find_package(
+  Boost
+  CONFIG REQUIRED
+  program_options
+  thread
+  log
+  log_setup
+  filesystem
+)
+hunter_add_package(Async++)
+find_package(Async++ CONFIG REQUIRED)
 find_package(Threads)
 
-add_library(
-  ${PROJECT_NAME}
-  STATIC
-  # TODO
-)
-
 add_executable(
-  tests
-  # TODO
+  ${PROJECT_NAME}
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/main.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/Command.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/Settings.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/LogSetup.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/Timer.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/sources/Utils.cpp
 )
 
 target_include_directories(
   ${PROJECT_NAME}
   PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}/include
-)
-
-target_include_directories(
-  tests
-  PUBLIC
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${GTEST_ROOT}/include
+  ${CMAKE_CURRENT_SOURCE_DIR}/vendor/boost-process/include
 )
 
 target_link_libraries(
-  tests
-  ${CMAKE_THREAD_LIBS_INIT}
-  GTest::gtest
-  GTest::main
   ${PROJECT_NAME}
+  Async++::Async++
+  Boost::program_options
+  Boost::thread
+  Boost::log
+  Boost::log_setup
+  Boost::filesystem
 )
-
-enable_testing()
-add_test(NAME unit_tests COMMAND tests)
-
-if (BUILD_COVERAGE)
-  set(ENABLE_COVERAGE ON CACHE BOOL "Enable coverage build." FORCE)
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-  find_package(codecov)
-  add_coverage(${PROJECT_NAME})
-  add_coverage(tests)
-  list(APPEND LCOV_REMOVE_PATTERNS "'${PROJECT_SOURCE_DIR}/tests/*'")
-  coverage_evaluate()
-endif ()

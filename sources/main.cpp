@@ -23,30 +23,34 @@ void startProcess(const Command::ArgList &commandArgs, std::unique_ptr<ThreadDat
     // Start
     BOOST_LOG_TRIVIAL(info) << "Command: cmake";
     for (const auto &arg : commandArgs) {
-        BOOST_LOG_TRIVIAL(info) << "                 " << arg;
+        BOOST_LOG_TRIVIAL(info) << "                " << arg;
     }
+    BOOST_LOG_TRIVIAL(info) << "\n";
+
+    ipstream stream;
 
     child child{search_path("cmake"),
-                args(commandArgs)};
+                args(commandArgs),
+                std_out > stream};
 
     // Update data
-    if (child.running()) {
-        if (!data.get()) {
-            data = std::make_unique<ThreadData>(ThreadData{false, std::move(child)});
-        } else {
-            data->currentProcess = std::move(child);
-        }
-        BOOST_LOG_TRIVIAL(debug) << "Data updated";
+    if (!data) {
+        data = std::make_unique<ThreadData>(ThreadData{false, std::move(child)});
+    } else {
+        data->currentProcess = std::move(child);
+    }
+    BOOST_LOG_TRIVIAL(debug) << "Data updated";
+
+    // Get output
+    for (std::string line; data->currentProcess.running() && std::getline(stream, line);) {
+        BOOST_LOG_TRIVIAL(info) << line;
     }
 
     // Wait until exit
-    auto exitCode = data->currentProcess.exit_code();
-    if (exitCode != 0) {
-        BOOST_LOG_TRIVIAL(error) << "Exit code: " << exitCode;
-        data->isTerminated = true;
-    }
+    data->currentProcess.wait();
 
-    BOOST_LOG_TRIVIAL(info) << "Exit code: " << exitCode;
+    auto exitCode = data->currentProcess.exit_code();
+    BOOST_LOG_TRIVIAL(info) << "Exit code: " << exitCode << "\n";
 }
 
 int main(int argc, char *argv[])
@@ -68,15 +72,18 @@ int main(int argc, char *argv[])
     );
 
     if (Settings::isInstallEnabled) {
-        build.then(
+        build = build.then(
             boost::bind(startProcess, Command::getInstall(), std::ref(data))
         );
     }
     if (Settings::isPackEnabled) {
-        build.then(
+        build = build.then(
             boost::bind(startProcess, Command::getPack(), std::ref(data))
         );
     }
+    build = build.then([&data]() {
+        data->isTerminated = true;
+    });
 
     build.wait();
     timer.wait();
