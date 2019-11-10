@@ -50,7 +50,12 @@ void startProcess(const Command::ArgList &commandArgs, std::unique_ptr<ThreadDat
     data->currentProcess.wait();
 
     auto exitCode = data->currentProcess.exit_code();
-    BOOST_LOG_TRIVIAL(info) << "Exit code: " << exitCode << "\n";
+    BOOST_LOG_TRIVIAL(info) << "Exit code: " << exitCode;
+
+    if (exitCode != 0) {
+        BOOST_LOG_TRIVIAL(error) << "Non zero exit code. Exiting...";
+        data->isTerminated = true;
+    }
 }
 
 int main(int argc, char *argv[])
