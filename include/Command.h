@@ -6,14 +6,16 @@
 class Command
 {
 public:
+    using ArgList = std::list<std::string>;
+
     static const std::string DIRECTORY_BUILD;
     static const std::string DIRECTORY_INSTALL;
 
-    static std::string getConfig();
+    static ArgList getConfig();
 
-    static std::string getBuild();
+    static ArgList getBuild();
 
-    static std::string getInstall();
+    static ArgList getInstall();
 
-    static std::string getPack();
+    static ArgList getPack();
 };

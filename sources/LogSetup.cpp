@@ -16,7 +16,7 @@ void LogSetup::init()
     static const std::string format = "[%TimeStamp%][%ThreadID%][%Severity%]: %Message%";
 
     auto sinkFile = boost::log::add_file_log(
-        boost::log::keywords::file_name = "logs/log_%N.log",
+        boost::log::keywords::file_name = ".build/logs/log_%N.log",
         boost::log::keywords::rotation_size = 128 * 1024 * 1024,
         boost::log::keywords::auto_flush = true,
         boost::log::keywords::format = format
