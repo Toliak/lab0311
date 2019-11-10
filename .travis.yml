@@ -11,21 +11,9 @@ before_script:
 
 jobs:
   include:
-    - name: "tests"
+    - name: "compile"
       script:
-        - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/tests.sh $DOCKER_IMAGE
-    - name: "coverage"
-      script:
-        - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/coverage.sh $DOCKER_IMAGE
-    - name: "quality"
-      script:
-        - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/duplication.sh $DOCKER_IMAGE
-    - name: "memory leaks"
-      script:
-        - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/valgrind.sh $DOCKER_IMAGE
-#    - name: "compile"
-#      script:
-#        - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/compile.sh $DOCKER_IMAGE
+        - docker run -t -v $(pwd):/var/builder/ -w /var/builder --entrypoint ./scripts/compile.sh $DOCKER_IMAGE
 
 notifications:
   email: false
